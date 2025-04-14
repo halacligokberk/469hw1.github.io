@@ -104,8 +104,16 @@
         <h3>Bezier Curve Rendering</h3>
 
           We also need to render Bezier curves to the screen. I did this by sampling points from a Bezier Curve which I implemented using Bernstein polynomials in the <code>sample_bezier_curve</code> function
-          under the <code>utils.h</code> library then I rendered those using a simple line renderer. Until here it was straightforward.
+          under the <code>utils.h</code> library. Then I rendered the curve using a simple line renderer. Until here it was straightforward. Then I come across a problem: We need to generate Bezier curves on the 
+          fly and they should always stay visible to the user. Generating random control points and ensuring C0 and C1 continuity was easy but I really didn't know how can i keep the curve in the frustrum. Checking if an world coordinate appears 
+          in the screen is hard and generating such a point requires a brute force method. I did some research on this problem and found out that I can solve this problem in reverse order. Firstly revisit the transformations 
+          we make on the way:
 
+          Object Coordinates --Modelling Transformation--> World Coordinates --Camera Transformation--> Camera Coordinates --Projection Transformation--> Clip Coordinates --Perspective Divide--> NDC
+
+          It is given that any point in the NDC space appears in the screen. Since it is bounded between -1 and 1 for every axis, I can sample visible points by generating points from NDC space and inverse transforming them into
+          the world coordinates. It seems like very hard work but its very simple. All we need to do is multiply projection matrix and camera matrix and take the inverse of the resulting matrix. This inverse matrix can map any point
+          from NDC space to the world coordinates. With this method, I devised a way to generate visible Bezier curves in real time.
 
 
       </p>
