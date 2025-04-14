@@ -75,12 +75,16 @@
     <!-- Blog Post Sample -->
     <article>
       <h2>CENG 469 HW1 Blog</h2>
-      <p> I started this homework by rendering a simple bezier curve mesh. We already have a sample program which can parse and render <code>.obj</code> files in OpenGL
+      <p> 
+        
+        <h3>Bezier Surface Rendering</h3>
+        
+        I started this homework by rendering a simple bezier curve mesh. We already have a sample program which can parse and render <code>.obj</code> files in OpenGL
         To make use of the already existing rendering pipeline. I decided to create and define my Bezier surfaces in a similar way. The <code>.obj</code> parser fills a 
         <code>vector</code> container for normals, faces and vertices etc. I wrote a function <code>add_surface</code> which tesellates the bezier surfaces and fills the aforementioned vectors
         in the same way as the <code>.obj</code> parser to have compatibility with the rest of the rendering pipeline. Setting up the mesh wasn't so hard. I did some mistakes while 
         calculating the normals. One of the mistakes was having the wrong order for calculating normals. The other was calculating the faces one by one, this lead to repetition of 
-        some vertices. Because of that, I had a shadowy-looking mesh. To solve that problem I changed the tessellation algorithm. My tesellation algorithm as follows:
+        some vertices. Because of that, I had a shadowy-looking mesh. To solve that problem I changed the tessellation algorithm. My tesellation algorithm is as follows:
 
         <ul>
         <li>
