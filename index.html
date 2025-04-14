@@ -99,8 +99,14 @@
         <li>
         3. Finally normalize the normals based on the number of neighbouring faces it has.
         </li>
-
         </ul>
+
+        <h3>Bezier Curve Rendering</h3>
+
+          We also need to render Bezier curves to the screen. I did this by sampling points from a Bezier Curve which I implemented using Bernstein polynomials in the <code>sample_bezier_curve</code> function
+          under the <code>utils.h</code> library then I rendered those using a simple line renderer. Until here it was straightforward.
+
+
 
       </p>
     </article>
@@ -110,7 +116,7 @@
   </div>
   
   <footer>
-    <p>&copy; 2025 Eren Gökberk Halaçlı.</p>
+    <p>&copy; 2025, Eren Gökberk Halaçlı</p>
   </footer>
 </body>
 </html>
