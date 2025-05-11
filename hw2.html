@@ -111,8 +111,8 @@
 
             <h3>Keyboard Controls</h3>
 
-              In this homework, we also show what the scene looks like in different stages of the pipeline. I keep track of the key presses in the main program. The rendering changes happend
-              in the shaders. So I used uniforms to control shader behavior. This works for most rendering modes but for rendering the positions and normals, I had some side-effects. Even though this was a simple change,
+              In this homework, we also show what the scene looks like in different stages of the pipeline. I keep track of the key presses in the main program. The rendering changes happens
+              in the shaders. So I used uniforms to control shader behavior. This works for most rendering modes but I had some side-effects for rendering the positions and normals. Even though this was a simple change,
               rendered normals was also getting affected by the light intensity. I suppose this is caused by the gpu executing every program branch and selecting the correct one after every branch is executed.
               After spending several hours trying to fix it, I decided to use another way to implement this feature. In the main loop, when the program only renders the normals or positions, we switch to a different shader that renders the normals and positions directly to
               the screen. This worked correctly, it also avoids doing extra passes when we are rendering the normals or positions.
