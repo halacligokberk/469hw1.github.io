@@ -82,9 +82,8 @@
 
             In this homework I implemented a deferred renderer in OpenGL that features an HDR cubemap and an object.
 
-            I started by designing the deferred renderer. In the first pass created by crating framebuffers for each pass. This requied me to create textures in the framebuffers the 
-            the data I need to pass to next passes, I also need to create lots of uniform variables and carry data between shaders in general. Writing and debugging these shaders was a bit challenging.
-            But in the end, I learnt a lot about how shaders work and pass data.
+            I started by designing the deferred renderer. I used different framebuffers with various textures. I also needed to create lots of uniform variables and carry data between shaders using the textures. 
+            Writing and debugging these shaders was a bit challenging. But in the end, I learnt a lot about how shaders work and pass data.
             
             Overall rendering pipeline can be summarized as follows:
 
