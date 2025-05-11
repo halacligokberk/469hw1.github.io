@@ -94,20 +94,47 @@
 
             Let's go through the passes one by one:
 
-            <h3>Geometry Pass</h3>
+            <h4>Geometry Pass</h4>
 
               In the first pass, we write the normals and positions of the object into respective textures of the framebuffer. One thing to pay attention is the types of the textures.
               For normal and position textures, using GL_RGB32F datatype works better than RGB since it has higher precision and, for depth texture we should use specific GL_DEPTH_COMPONENT24 data type
               and GL_DEPTH_ATTACHMENT texture type.
 
-            <h3>Lighting Pass</h3>
+            <h4>Lighting Pass</h4>
 
               In the second pass, I use the normal and position textures to calculate the lighting of the scene. I write the results to a different framebuffer. I also use exposure/intensity 
-              as a uniform variable to control the brightness.
+              as a uniform variable to control the brightness. 
 
-            <h3>Post Processing Pass</h3>
+            <h4>Post Processing Pass</h4>
 
-              This is where we combine everything together. 
+              This is where we combine everything together. For combiining the objects and the cubemap, I use the depth texture from the geometry pass. If a point has the maximum depth, we 
+              render the cubemap with tonemapping and gamma correction. Otherwise, we directly render the object by sampling from the texture of the lighting pass framebuffer.
+
+            <h3>Keyboard Controls</h3>
+
+              In this homework, we also show what the scene looks like in different stages of the pipeline. I keep track of the key presses in the main program. The rendering changes happend
+              in the shaders. So I used uniforms to control shader behavior. This works for most rendering modes but for rendering the positions and normals, I had some side-effects. Even though this was a simple change,
+              rendered normals was also getting affected by the light intensity. I suppose this is caused by the gpu executing every program branch and selecting the correct one after every branch is executed.
+              After spending several hours trying to fix it, I decided to use another way to implement this feature. In the main loop, when the program only renders the normals or positions, we switch to a different shader that renders the normals and positions directly to
+              the screen. This worked correctly, it also avoids doing extra passes when we are rendering the normals or positions.
+
+            <h3>Animations and Camera Controls</h3>
+
+              I implemented camera rotations and the model animations using quarternions, The implementations was simple.
+
+            <h3>Final Notes</h3>
+
+              Doing this homework was both challenging and fun. I spent most of the time on finding and fixing the bugs. But in the end, I feel more confident working with OpenGL, since
+              I was able to write a program that implements a modified rendering technique. 
+
+
+            <br> Here are some screenshots of the program:
+            <br> 
+            <img src="bozuk.png" alt="This is what happens when I don't use the correct texture types and possibly do some other mistakes." style="width: 80%; height: auto;">
+            <br> 
+            <img src="normal.png" alt="This is the normal map of the object." style="width: 80%; height: auto;">
+            <br> 
+            <img src="tonemap.png" alt="This is the final image after tonemapping and gamma correction." style="width: 80%; height: auto;">
 
         </p>
     </article>
