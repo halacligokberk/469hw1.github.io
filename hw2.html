@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HW2 - My Blog</title>
+  <style>
+    /* Base styling */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+      line-height: 1.6;
+    }
+    /* Header styling */
+    header {
+      background-color: #333;
+      color: #fff;
+      padding: 1rem 0;
+      text-align: center;
+    }
+    header nav ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    header nav ul li {
+      display: inline;
+      margin: 0 10px;
+    }
+    header nav ul li a {
+      color: #fff;
+      text-decoration: none;
+    }
+    /* Container for content */
+    .container {
+      width: 90%;
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 0 10px;
+      padding-bottom: 80px;
+    }
+    /* Article styling */
+    article {
+      background-color: #fff;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    /* Footer styling */
+    footer {
+      position: relative;
+      background-color: #333;
+      color: #fff;
+      text-align: center;
+      padding: 1rem 0;
+      position: fixed;
+      width: 100%;
+      bottom: 0;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Gökberk's Graphics Blog</h1>
+    <nav>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="hw2.html">HW2</a></li>
+      </ul>
+    </nav>
+  </header>
+  
+  <div class="container">
+    <article>
+      <h2>CENG 469 HW2 Blog</h2>
+      <p>
+        <h3>Project Overview</h3>
+
+            In this homework I implemented a deferred renderer in OpenGL that features an HDR cubemap and an object.
+
+            I started by designing the deferred renderer. In the first pass created by crating framebuffers for each pass. This requied me to create textures in the framebuffers the 
+            the data I need to pass to next passes, I also need to create lots of uniform variables and carry data between shaders in general. Writing and debugging these shaders was a bit challenging.
+            But in the end I learnt a lot about how shaders work and pass data.
+            .
+            Overall rendering pipeline can be summarized as follows:
+
+            <img src="pipeline.png" alt="Showcase 1" style="width: 50%; height: auto;">
+
+            
+
+
+        </p>
+    </article>
+  </div>
+  
+  <footer>
+    <p>&copy; 2025, Eren Gökberk Halaçlı</p>
+  </footer>
+</body>
+</html> 
