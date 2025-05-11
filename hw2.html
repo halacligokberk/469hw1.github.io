@@ -85,11 +85,20 @@
             I started by designing the deferred renderer. In the first pass created by crating framebuffers for each pass. This requied me to create textures in the framebuffers the 
             the data I need to pass to next passes, I also need to create lots of uniform variables and carry data between shaders in general. Writing and debugging these shaders was a bit challenging.
             But in the end I learnt a lot about how shaders work and pass data.
-            .
+            
             Overall rendering pipeline can be summarized as follows:
 
-            <img src="pipeline.png" alt="Showcase 1" style="width: 50%; height: auto;">
+            <img src="pipeline.png" alt="Showcase 1" style="width: 80%; height: auto;">
 
+            Let's go through the passes one by one:
+
+            <h3>First Pass</h3>
+
+              In the first pass, we write the normals and positions of the object into respective textures of the framebuffer. One thing to pay attention is the types of the textures.
+              For normal and position textures, using GL_RGB32F datatype works better than RGB since it has higher precision and, for depth texture we should use specific GL_DEPTH_COMPONENT24 data type
+              and GL_DEPTH_ATTACHMENT texture type.
+
+            
             
 
 
