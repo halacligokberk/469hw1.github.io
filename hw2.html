@@ -106,7 +106,7 @@
 
             <h4>Post Processing Pass</h4>
 
-              This is where we combine everything together. For combiining the objects and the cubemap, I use the depth texture from the geometry pass. If a point has the maximum depth, we 
+              This is where we combine everything together. For combining the objects and the cubemap, I use the depth texture from the geometry pass. If a point has the maximum depth, we 
               render the cubemap with tonemapping and gamma correction. Otherwise, we directly render the object by sampling from the texture of the lighting pass framebuffer.
 
             <h3>Keyboard Controls</h3>
