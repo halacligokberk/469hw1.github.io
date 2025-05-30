@@ -7,7 +7,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>HW3 - My Blog</title>
+  <p class="last-edit-date"><em>Last edited: <span id="lastEdit"></span></em></p>
   <style>
+        code {
+      background: #f4f4f4;
+      color: #c7254e;
+      padding: 2px 4px;
+      border-radius: 4px;
+      font-size: 95%;
+    }
     /* Base styling */
     body {
       font-family: Arial, sans-serif;
@@ -72,7 +80,8 @@
       <ul>
         <li><a href="index.html">Home</a></li>
         <li><a href="#about">About</a></li>
-        <li><a href="hw3.html">HW2</a></li>
+        <li><a href="hw2.html">HW2</a></li>
+        <li><a href="hw3.html">HW3</a></li>
       </ul>
     </nav>
   </header>
@@ -105,11 +114,52 @@
           <br>
           <pre><code class="language-cpp">
 
-          For storing the system state, I use 3 buffers:
+          //For storing the system state, I use 3 buffers:
           DrawBuffer // for storing particle locations
           VelocityBuffer // for storing particle velocities
           attractorBuffer // for storing attractor data
         </code></pre>
+
+          <br>
+          <br>
+
+          In compute shader, I directly apply Newton's gravity rules by assuming that all partices has mass of one(Attractors has 
+          customizable mass). This enabled me to have realistic simulations, for example I was able to create blackhole-like visualizations
+          by placing high masses to the screen:
+
+          <br>
+
+          <video width="100%" controls>
+            <source src="blackhole.mp4" type="video/mp4">
+          </video>
+  
+          <br>
+
+          In the intermediate phases of this project, I had a problem. Some particles were not being updated, they were clinging to the background.
+          After some debugging I found out that the problem was how I invoke the shaders:
+          
+          <pre><code class="language-cpp">
+
+            //wrong one
+            //glDispatchCompute( (particleCount/64), 1, 1);
+       
+            //correct one
+            glDispatchCompute(  (particleCount + 64 - 1) / 64, 1, 1);
+          </code></pre>
+
+          <br>
+          Since I was using 64 threads in the shaders, I firstly used <code>particleCount/64</code>. In this case, when we use a
+          <code>particleCount</code> that is not evenly divisible to 64. So, remainder particles will be left out. After some research,
+          I came up with the latter formula which doesn't left out any particles.
+          
+          <h4>Coloring</h4>
+
+            Aesthetics is an important part of this homework so I tried a couple of color combinations to find something nice to look at.
+            Finally I choose to interpolate between blue and purple(I really like those two colors). 
+
+            <pre><code class="language-glsl"></code>
+            vColor = mix(vec4(0.7, 0, 0.8, 0.9), vec4(0, 0, 0.8, 1.0), draw[gl_VertexID].z);
+            </code></pre>
 
       </p>
     </article>
@@ -119,4 +169,19 @@
     <p>&copy; 2025, Eren Gökberk Halaçlı</p>
   </footer>
 </body>
-</html> 
+</html>
+
+
+
+<script>
+  document.getElementById('lastEdit').textContent = 
+    new Date(document.lastModified).toLocaleString();
+</script>
+<style>
+  .last-edit-date {
+    color: #888;
+    font-size: 0.95em;
+    margin-top: -10px;
+    margin-bottom: 15px;
+  }
+</style>
