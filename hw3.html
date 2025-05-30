@@ -160,6 +160,15 @@
             vColor = mix(vec4(0.7, 0, 0.8, 0.9), vec4(0, 0, 0.8, 1.0), draw[gl_VertexID].z);
             </code></pre>
 
+          <h4>User Controls</h4>
+
+            This homeworks has various user interactions most of them were straightforward but adding and removing attractors weren't that simple.
+          When the user adds or removes an attractor we remove and reload attractor SSBOs with an updated list of attractors. At first, I thought that
+          will create performance issues but it didn't since we will use maximum 12 attractors. But there might be issues if we use a bigger number 
+          of attractors.
+
+
+
       </p>
     </article>
   </div>
