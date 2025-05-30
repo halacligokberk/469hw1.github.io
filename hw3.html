@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HW3 - My Blog</title>
+  <style>
+    /* Base styling */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+      line-height: 1.6;
+    }
+    /* Header styling */
+    header {
+      background-color: #333;
+      color: #fff;
+      padding: 1rem 0;
+      text-align: center;
+    }
+    header nav ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    header nav ul li {
+      display: inline;
+      margin: 0 10px;
+    }
+    header nav ul li a {
+      color: #fff;
+      text-decoration: none;
+    }
+    /* Container for content */
+    .container {
+      width: 90%;
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 0 10px;
+      padding-bottom: 80px;
+    }
+    /* Article styling */
+    article {
+      background-color: #fff;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    /* Footer styling */
+    footer {
+      position: relative;
+      background-color: #333;
+      color: #fff;
+      text-align: center;
+      padding: 1rem 0;
+      position: fixed;
+      width: 100%;
+      bottom: 0;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Gökberk's Graphics Blog</h1>
+    <nav>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="hw3.html">HW2</a></li>
+      </ul>
+    </nav>
+  </header>
+  
+  <div class="container">
+    <article>
+      <h2>CENG 469 HW3 Blog</h2>
+      <p>
+        <h3>Project Overview</h3>
+
+        In this homework I implemented a particle simulation in OpenGL using compute shaders.
+
+        <br>
+        Here is how the finished homework looks : 
+        <br>          
+
+        <video width="100%" controls>
+          <source src="demo.mp4" type="video/mp4">
+        </video>
+
+        Let's see how we achieved that
+
+        <h3>Technical Details</h3>
+
+            All physical calculations is carried out in the compute shaders so we need to use some data structures to store
+          data that will be used in the shaders. OpenGL has many alternatives for that. Among those, I selected SSBOs (Shader Storage
+          Buffer Objects) since they are intended for shader use. They also have variable size and are easy to render. You can bind them
+          to a VAO and draw directly to screen.            
+        
+          <br>
+          <pre><code class="language-cpp">
+
+          For storing the system state, I use 3 buffers:
+          DrawBuffer // for storing particle locations
+          VelocityBuffer // for storing particle velocities
+          attractorBuffer // for storing attractor data
+        </code></pre>
+
+      </p>
+    </article>
+  </div>
+  
+  <footer>
+    <p>&copy; 2025, Eren Gökberk Halaçlı</p>
+  </footer>
+</body>
+</html> 
