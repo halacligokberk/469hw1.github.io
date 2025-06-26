@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Final - My Blog</title>
+  <style>
+        code {
+      background: #f4f4f4;
+      color: #c7254e;
+      padding: 2px 4px;
+      border-radius: 4px;
+      font-size: 95%;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+      line-height: 1.6;
+    }
+    header {
+      background-color: #333;
+      color: #fff;
+      padding: 1rem 0;
+      text-align: center;
+    }
+    header nav ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    header nav ul li {
+      display: inline;
+      margin: 0 10px;
+    }
+    header nav ul li a {
+      color: #fff;
+      text-decoration: none;
+    }
+    .container {
+      width: 90%;
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 0 10px;
+      padding-bottom: 80px;
+    }
+    article {
+      background-color: #fff;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    footer {
+      position: relative;
+      background-color: #333;
+      color: #fff;
+      text-align: center;
+      padding: 1rem 0;
+      position: fixed;
+      width: 100%;
+      bottom: 0;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Gökberk's Graphics Blog</h1>
+    <nav>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="hw2.html">HW2</a></li>
+        <li><a href="hw3.html">HW3</a></li>
+        <li><a href="final.html">Final</a></li>
+      </ul>
+    </nav>
+  </header>
+  
+  <div class="container">
+    <article>
+      <h2>CENG 469 Final Project Blog</h2>
+      <p>
+        
+        Eren Gökberk Halaçlı - Emre Çam
+        
+            <h3>Project Overview</h3>
+
+        In this project we rendered a nature scene that contains a Sakura tree
+        shedding its flowers, and a little pond that captures the reflection of the sakura
+        tree. Let’s go over each part one by one.
+
+        <br>
+
+            <h3>Sakura Tree & Falling Flowers</h3>
+
+        
+                    We used royalty-free tree and flower models and rendered them directly.
+        For simulating the falling flowers we utilized the GPU as much as we can. We
+        used Shader Storage Buffer Objects(SSBOs) to store the per flower state. We
+        used separate buffers for state data such as the position, rotation, movement
+        randomization which we tell in more detail. In every rendering pass those
+        buffers are updated by a compute buffer. This greatly increases the
+        performance of our application by taking a burden from the CPU. Now lets talk
+        about the leaf movement and our buffers.
+                
+        <br>
+
+        Each flower/leaf does two main movements, they rotate around
+        themselves and follow a helix-like shape while falling. To create a helix, they
+        make a constant velocity movement in the y-axis with some perturbations.
+        Whereas in the x-axis they follow a parametrized sinus curve that can be
+        formulated as follows:
+
+                <br>
+        
+                <pre><code class="language-cpp">
+        
+                X_new = X_start + C*sin(omega*t + P) + noise
+
+                </code></pre>
+
+                <br>
+    
+            The constant C is the circumference of the helix, t is the frequency it
+        controls how fast the flowers are spinning and P is the Phase movement
+        constant. We also add a scalar Perlin noise component to increase
+        randomness.
+
+        <br>
+
+        To simulate the self-centered rotation, we use the following formula:
+            
+            <br>
+            
+            <pre><code class="language-cpp">
+
+            R_new = R_start + 0.005 + noise (mod 360)
+                
+            </code></pre>
+
+
+            <br>
+        We use Euclid angles since GLSL doesn’t have any built-in quaternion support.
+        We basically initialize the rotation of leaves with random numbers in their
+        spawn points and rotate them repeatedly in each axis by a random amount.
+        The relationship between the buffers and the aforementioned numbers are as
+        follows:
+
+
+
+
+
+
+      </p>
+    </article>
+  </div>
+  
+  <footer>
+    <p>&copy; 2025, Eren Gökberk Halaçlı</p>
+    <p class="last-edit-date"><em>Last edited: <span id="lastEdit"></span></em></p>
+  </footer>
+</body>
+</html>
+<script>
+  document.getElementById('lastEdit').textContent = 
+    new Date(document.lastModified).toLocaleString();
+</script>
+<style>
+  .last-edit-date {
+    color: #888;
+    font-size: 0.95em;
+    margin-top: -10px;
+    margin-bottom: 15px;
+  }
+</style>
