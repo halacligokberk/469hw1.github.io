@@ -102,7 +102,7 @@
                     We used royalty-free tree and flower models and rendered them directly.
         For simulating the falling flowers we utilized the GPU as much as we can. We
         used Shader Storage Buffer Objects(SSBOs) to store the per flower state. We
-        used separate buffers for state data such as the position, rotation, movement
+        used separate buffers for state data such as the position, rotation, movement and
         randomization which we tell in more detail. In every rendering pass those
         buffers are updated by a compute buffer. This greatly increases the
         performance of our application by taking a burden from the CPU. Now lets talk
@@ -151,6 +151,151 @@
         The relationship between the buffers and the aforementioned numbers are as
         follows:
 
+            <br>
+
+            <ul>
+            <li>Position SSBO: Stores the current position of the leaf.</li>
+            <li>Rotation SSBO: Stores the current self-centered rotation state of the leaf.</li>
+            <li>Randomizer SSBO: Stores the randomizer constants for the helix movement.</li>
+            </ul>
+
+            <br>
+
+                Now we are all set for rendering. Since we are going to render flowers in
+            masses, we need an efficient way other than rendering the flowers in a for
+            loop. Instanced rendering is the way-to-go for this case, it also very easy to
+            use ! We just replace glDrawElements call with glDrawElementsInstanced and
+            provide the number of instances to render as an additional argument. So, what
+            is the difference between these two? In glDrawElements, CPU tells the GPU to
+            draw only once and drawing repeatedly in a for loop comes with a CPU-GPU
+            communication overhead. In instanced drawing CPU tells the GPU to draw
+            multiple times and this greatly reduces the overhead. Instanced rendering also
+            provides a built-in gl_InstanceID argument to the vertex shader. This
+            argument stores the id number (starting from zero) of the argument that is
+            currently rendering in the shader. With this id we can select the related
+            information from the SSBOs during the rendering process.
+
+            <br>
+            <br>
+
+            Now we can simulate just a group of flowers falling from the tree.            
+
+            <br>
+
+            [Buraya video koy]
+
+            <br>
+
+            To make it a repeated motion we need to spawn new flowers regularly. We can
+            do this by extending the SSBOs regularly. However this comes with a
+            downside, extending and SSBO is a really expensive operation because it
+            requires us to allocate more space in the GPU, create new data in the CPU
+            and copy it to GPU. This causes the program to lag during the new flower
+            spawns. Here is a video that shows it:
+                        <br>
+
+            [Flickerlı halinin videosu]
+                        <br>
+
+            After giving it some thought, we decided to preallocate a certain amount of
+            SSBO space (and never allocate again) during the program initialization and
+            increase the number of flowers we are rendering regularly. This solves the
+            performance issue but puts a limit on how many flowers can fall from the tree.
+            We can have a limit of 100.000 without any problems so I think it is okay since
+            most trees don’t have that many flowers.
+
+            <br>
+
+            [Düzgün halinin videosu]
+
+            <br>
+
+            <h3>Water with Reflections</h3>
+
+                        <br>
+
+
+            Our project also captures a little pond where you can see the reflection
+                of the environment, there are also flowers floating on it.
+
+                            <br>
+
+        [A closer video of the pond]
+
+                    <br>
+
+        Let’s talk about the technical parts of the pond. First of all, there is no
+        pond. What you see in the screen is a waving mirror (like the ones you see in
+        amusement parks).
+
+                <br>
+
+                    <figure>
+              <img src="image.png" alt="image credits: https://decorativeantiques.uk/products/fairground-distortion-
+mirror?variant=41598986485826" style="width: 80%; height: auto;">
+              <figcaption> image credits: https://decorativeantiques.uk/products/fairground-distortion-
+mirror?variant=41598986485826 </figcaption>
+    
+            </figure>
+
+            <br>
+
+            The funny thing is the mirror is not actually waving, the waving effect is
+done in shader by creating distorted normals. And the mirror is … is a mirror,
+no tricks in there :)
+
+            <br>
+        Now lets examine the technical parts basic to simple.
+
+            <br>
+
+            <h4>The Mirror</h4>
+
+                        <br>
+
+
+                    There are numerous ways to create reflections in graphics, we didn’t
+        want to use ray-tracing to make the program lighter. Most of the methods
+        outside ray-tracing are some version of using a “reflected” camera across the
+        mirror surface and using the renders of that camera as the reflections.
+        There are multiple ways to implement this approach, one way is to
+        literally reflect the main camera by keeping a second camera which has the
+        matrices of a reflected camera.
+
+                    <br>
+
+We tried this first but we encountered several issues:
+
+            <br>
+
+            <ul>
+        <li> If we move the actual camera(POV of the user), we need to apply the correct
+        version of that transformation to the mirrored camera. It was complicated for
+        us to find those correct versions, we ended up having the tree and its
+        reflection going to different directions when we move the camera.
+        </li>
+        
+        <li> The other issue is the left and right of the mirrored and original cameras are
+        inverted because of that, the reflection was not right to begin with
+        </li>
+        </ul>
+                    <br>
+
+        [Bozuk halinden görüntüler]
+
+                    <br>
+
+        Because of these reasons we changed our reflection method to
+        something simpler. Instead of reflecting the camera, we decided to reflect the
+        objects with a modeling matrix change: a reflection matrix.
+
+                    <br>
+
+        [Reflection matrix formülü]
+
+                    <br>
+
+        This formula is the homogenous-3D version of 2D reflection.
 
 
 
