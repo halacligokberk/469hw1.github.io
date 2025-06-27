@@ -220,8 +220,8 @@
                   
                     <br>
 
-        Let’s talk about the technical parts of the pond. First of all, there is no
-        pond. What you see in the screen is a waving mirror (like the ones you see in
+        Let’s talk about the technical parts of the lake. First of all, there is no
+        lake. What you see in the screen is a waving mirror (like the ones you see in
         amusement parks).
 
                 <br>
@@ -241,7 +241,7 @@ done in shader by creating distorted normals. And the mirror is … is a mirror,
 no tricks in there :)
 
             <br>
-        Now lets examine the technical parts basic to simple.
+        Now lets examine the technical parts.
 
             <br>
 
@@ -320,6 +320,226 @@ We tried this first but we encountered several issues:
 
         This formula is the homogenous-3D version of 2D reflection.
 
+        [DÜZGÜN MIRROR RENDER].
+        
+        <h3>Creating the Water</h3>
+
+        In this section, we’ll go through how we designed and developed our water system. What started as a simple flat rectangle turned into a visually dynamic water surface with lighting, reflection, wave motion, and more. We'll cover the journey step by step: from the first attempts, through our problem-solving process, to the final version.
+
+        <br><br>
+
+        <h4>First Attempt: The Simplest Water</h4>
+
+        <br>
+
+        To begin with, we created a simple flat plane and added a basic water texture. We experimented with simple sinusoidal distortions using position and time, and thought of blending what’s beneath and reflecting the environment using a cubemap.
+
+        <br>
+
+        We started with the most basic idea: take a small rectangle, apply a procedural texture based on coordinates, and slightly distort it with lighting variations.
+
+        <br>
+
+        Nice :) We had something that resembled water — maybe from a game made before 1995. A fun start, but nowhere near realistic.
+
+        <br><br>
+
+        <h4>Trying Better Shapes</h4>
+
+        <br>
+
+        A rectangular lake felt unnatural. Real water bodies are rarely rectangles — they’re usually roundish or freeform. We thought it was time to use the holy Bézier curves we learned in Computer Graphics.
+
+        <br>
+
+        We wrote a Python script using matplotlib to draw Bézier curves and extract their shapes. With this method, we could define and generate ponds of any form.
+
+        <br>
+
+        [Screen shot of a pond]  
+        [Video of the pond with normal distortion waves]
+
+        <br>
+
+        However, this approach had one downside: rendering the environment and reflections on an irregular surface was going to be expensive and was not part of the original project scope. So we went back to a simpler decision — a large water plane that covers the entire ground. Problem solved.
+
+        <br><br>
+
+        <h4>Adding Movement with Simple Waves</h4>
+
+        <br>
+
+        We then added basic wave displacement. A single sine wave moved the surface up and down with time.
+
+        <br>
+
+        [Video of the second wave trial]
+
+        <br>
+
+        It wasn’t great, but hey — the water moved! It also responded to lighting (although it was buggy).
+
+        <br><br>
+
+        <h4>Multiple Waves and Color Variation</h4>
+
+        <br>
+
+        Obviously we needed more complexity. We increased the number of wave functions to four, each with different directions, amplitudes, and speeds. We also increased the water area and introduced color blending: deeper parts became darker blue, and peaks became lighter.
+
+        <br>
+
+        We took inspiration from this helpful video:  
+        <a href="https://www.youtube.com/watch?v=yPfagLeUa7k&t=182s&ab_channel=Acerola" target="_blank">https://www.youtube.com/watch?v=yPfagLeUa7k</a>
+
+        <br><br>
+
+        Here are the techniques we applied:
+
+        <ul>
+        <li><b>Wave stacking:</b> Four sine waves with varying parameters summed together to create a more organic surface.</li>
+        <li><b>Depth-based color:</b> The deeper the fragment position, the darker the shade of blue.</li>
+        <li><b>Lighting:</b> Diffuse and specular lighting using the Blinn-Phong model.</li>
+        <li><b>Fresnel effect:</b> Brighter edges at glancing angles to simulate reflectivity.</li>
+        <li><b>Specular dampening:</b> Crest peaks reflect less due to increased roughness.</li>
+        </ul>
+
+        <br>
+
+        <h4>Wave Structure</h4>
+
+        <br>
+
+        Each wave is defined by parameters like amplitude, wavelength, direction, and speed. The final displacement of the water surface is simply the sum of these wave functions:
+
+        <pre><code class="language-glsl">
+        float waveHeight = 0.0;
+        for (int i = 0; i &lt; 4; ++i) {
+            waveHeight += amplitude[i] * sin(dot(direction[i], worldPos.xz) * wavelength[i] + time * speed[i]);
+        }
+        </code></pre>
+
+        This combination gave us non-uniform, animated surface motion.
+
+        <br><br>
+
+        <h4>Adding Randomness with Lerp</h4>
+
+        <br>
+
+        Still, something was missing — randomness. We implemented a time-based transition between two sets of wave parameters using linear interpolation (lerp). At regular intervals, we generate new wave configurations and blend from the old ones to the new. This made the movement less predictable and more natural.
+
+        <br><br>
+
+        <h4>The Moving Water Bug</h4>
+
+        <br>
+
+        After rendering the water with the cubemap and the sakura tree, we encountered a weird issue: the water seemed to follow the camera. For an hour, we blamed our wave shader — tweaking code, adjusting math, etc.
+
+        <br>
+
+        Eventually, we drew a simple grid using OpenGL’s legacy draw calls and realized the issue wasn’t with the water.
+
+        <br>
+
+        The actual problem was <b>depth testing</b>. The tree was blending with the water without proper depth, causing the illusion that water always remained in front of the camera. Enabling depth testing before rendering the water fixed the problem instantly.
+
+        <br><br>
+
+        <h4>Adding Reflection</h4>
+
+        <br>
+
+        We connected the cubemap texture to the water shader and used the surface normals to sample from it. The result: convincing reflections of the tree and sky across the water.
+
+        <br><br>
+
+        <h4>Fixing the Tiling</h4>
+
+        <br>
+
+        While the reflections worked well, the waves still looked repetitive. The surface had too much motion and appeared heavily tiled.
+
+        <br>
+
+        After trying many parameter tweaks, we turned to a new approach: <b>Fractional Brownian Motion (fBm)</b>.
+
+        <br>
+
+        Here’s how it works:
+
+        <ul>
+        <li>Stack multiple sine waves, each with increasing frequency and decreasing amplitude.</li>
+        <li>This gives us subtle, high-frequency ripples on top of larger base waves.</li>
+        <li>The surface looks much more natural and less uniform.</li>
+        </ul>
+
+        We also found that almost-still water with minimal motion was visually the most appealing.
+
+        <br><br>
+
+        <h4>Edge Fog</h4>
+
+        <br>
+
+        The sharp edges of the water plane were breaking the realism. To hide them, we applied a simple fog effect based on the distance from the camera.
+
+        <br>
+
+        Surprisingly, this didn’t just solve the edge problem — it also added a beautiful fading effect to the horizon.
+
+        <br><br>
+
+        <h4>Improving the Lerp Logic</h4>
+
+        <br>
+
+        Our original random lerp logic was unpredictable — it sometimes got stuck, jumped too fast, or stopped entirely. We refined the logic:
+
+        <ul>
+        <li>Render using the initial wave configuration.</li>
+        <li>Periodically generate a new wave set and lerp toward it.</li>
+        <li>After completion, lerp back to the original configuration.</li>
+        </ul>
+
+        This gave us subtle transitions and a controlled loop.
+
+        <br><br>
+
+        <h4>Distorting Reflections</h4>
+
+        <br>
+
+        As a final touch, we added a slight distortion to the reflection of the tree based on its Y position and the camera’s view direction. This gave the reflection a rippled, watery appearance — especially noticeable at steep angles.
+
+        <br>
+
+        <h5>How It Works:</h5>
+
+        <ul>
+        <li>In the vertex shader, we pass texture coordinates and world position to the fragment shader.</li>
+        <li>In the fragment shader, we use normal perturbation and view direction to create distortion.</li>
+        <li>This affects how the reflection is sampled from the cubemap — resulting in shimmering movement.</li>
+        </ul>
+
+        <pre><code class="language-glsl">
+        // Fragment shader snippet
+        vec3 lightDir = normalize(vec3(1.0, 1.0, 1.0));
+        vec3 norm = normalize(Normal);
+        float diff = max(dot(norm, lightDir), 0.0);
+        vec3 ambient = 0.3 * baseColor.rgb;
+        vec3 diffuse = diff * baseColor.rgb;
+        FragColor = vec4(ambient + diffuse, baseColor.a);
+        </code></pre>
+
+        <br>
+
+        <h4>Final Thoughts</h4>
+
+        <br>
+
+        That’s it. All of these steps — from replacing a flat plane to blending wave sets, handling cubemaps, adding fog, and fixing bugs — came together to create a dynamic, realistic water surface. It wasn’t easy, but it was worth it.
 
 
 
